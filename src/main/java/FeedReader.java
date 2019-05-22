@@ -31,9 +31,10 @@ import com.rometools.rome.io.XmlReader;
                 "https://www.huffingtonpost.co.uk/feeds/index.xml",
                 "http://www.pinknews.co.uk/feed/");
 
-        private static List<String> getUri(String url) {
+        private static void getUri(String url) {
             List<String> articles = new ArrayList<>();
             try {
+                // Replace with getting urls from db
                 URL feedUrl = new URL(url);
 
                 SyndFeedInput input = new SyndFeedInput();
@@ -44,31 +45,23 @@ import com.rometools.rome.io.XmlReader;
                     String description = entry.getDescription().getValue();
                     String title = entry.getTitle();
                     Date publishedDate = entry.getPublishedDate();
+                    //Add to db
                 }
             }
             catch (Exception ex) {
                 ex.printStackTrace();
                 System.out.println("ERROR: "+ex.getMessage());
             }
-            return articles;
         }
 
 
 
-        public static void main(String[] args) throws ExecutionException, InterruptedException {
-            HashMap<String, List<String>> articles = new HashMap<>();
+        public static void main(String[] args) {
             ExecutorService executorService = Executors.newFixedThreadPool(4);
-            List<Future<List<String>>> futureArticles = new ArrayList<>();
             for (String sourceUrl : newsSources) {
-                futureArticles.add(executorService.submit(() -> getUri(sourceUrl)));
-            }
-            int i = 0;
-            for (Future<List<String>> article : futureArticles) {
-                articles.put(newsSources.get(i), article.get());
-                i++;
+                executorService.submit(() -> getUri(sourceUrl));
             }
 
-           System.out.println(articles.get("https://www.thesun.co.uk/feed/"));
         }
 
     }
