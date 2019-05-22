@@ -1,10 +1,12 @@
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 
+import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
@@ -27,7 +29,7 @@ import com.rometools.rome.io.XmlReader;
                 "https://www.thesun.co.uk/feed/",
                 "https://www.telegraph.co.uk/rss.xml",
                 "https://www.huffingtonpost.co.uk/feeds/index.xml",
-                " http://www.pinknews.co.uk/feed/");
+                "http://www.pinknews.co.uk/feed/");
 
         private static List<String> getUri(String url) {
             List<String> articles = new ArrayList<>();
@@ -38,7 +40,10 @@ import com.rometools.rome.io.XmlReader;
                 SyndFeed feed = input.build(new XmlReader(feedUrl));
 
                 for (SyndEntry entry : feed.getEntries()) {
-                    articles.add(entry.getUri());
+                    String uri = entry.getUri();
+                    String description = entry.getDescription().getValue();
+                    String title = entry.getTitle();
+                    Date publishedDate = entry.getPublishedDate();
                 }
             }
             catch (Exception ex) {
@@ -47,6 +52,8 @@ import com.rometools.rome.io.XmlReader;
             }
             return articles;
         }
+
+
 
         public static void main(String[] args) throws ExecutionException, InterruptedException {
             HashMap<String, List<String>> articles = new HashMap<>();
