@@ -3,6 +3,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.*;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -47,12 +48,20 @@ import com.rometools.rome.io.XmlReader;
             return articles;
         }
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws ExecutionException, InterruptedException {
             HashMap<String, List<String>> articles = new HashMap<>();
+            ExecutorService executorService = Executors.newFixedThreadPool(4);
+            List<Future<List<String>>> futureArticles = new ArrayList<>();
             for (String sourceUrl : newsSources) {
-                articles.put(sourceUrl, getUri(sourceUrl));
+                futureArticles.add(executorService.submit(() -> getUri(sourceUrl)));
             }
-            System.out.println(articles.get("https://www.thesun.co.uk/feed/"));
+            int i = 0;
+            for (Future<List<String>> article : futureArticles) {
+                articles.put(newsSources.get(i), article.get());
+                i++;
+            }
+
+           System.out.println(articles.get("https://www.thesun.co.uk/feed/"));
         }
 
     }
