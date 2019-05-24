@@ -28,7 +28,6 @@ public class Controller {
     // Retieving a collection
     MongoCollection<Document> collection = database.getCollection("rssFeeds");
     FindIterable<Document> iterDoc = collection.find();
-    int i = 1;
 
     // Getting the iterator
     Iterator it = iterDoc.iterator();
@@ -38,7 +37,6 @@ public class Controller {
       String k = (String) d.get("url");
       collection.insertMany(FeedReader.getUri(k));
       System.out.println(k);
-      i++;
     }
   }
 }

@@ -115,10 +115,18 @@ public class GetSentiment {
 		return gson.toJson(json);
 	}
 
+    private static void getFeedSentiment() {
+        //Get text from every news article and add it to documents
+            Documents documents = new Documents ();
+			documents.add ("1", "en","I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
+        
+        // Perform sentiment analysis on documents
+            
+    }
 	public static void main (String[] args) {
 		try {
 			Documents documents = new Documents ();
-			documents.add ("1", "en", "I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
+			documents.add ("1", "en","I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
 
 			String response = getTheSentiment (documents);
 			System.out.println (prettify (response));
