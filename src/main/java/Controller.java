@@ -37,9 +37,9 @@ public class Controller {
     //System.out.println("Collection created successfully");
 
     // Retieving a collection
-    MongoCollection<Document> collection = database.getCollection("rssFeeds");
+    MongoCollection<Document> collection = database.getCollection("feeds");
     FindIterable<Document> iterDoc = collection.find();
-    boolean usingDatabase = false;
+    boolean usingDatabase = true;
     // Getting the iterator
     Iterator it = iterDoc.iterator();
     if (usingDatabase) {
@@ -49,7 +49,7 @@ public class Controller {
       List<Document> articles = FeedReader.getArticles(k);
       FeedReader.processArticles(articles);
       collection.insertMany(articles);
-      System.out.println(k);
+      //System.out.println(k);
     }
 
     } else {
