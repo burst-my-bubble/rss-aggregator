@@ -10,7 +10,7 @@ public class Article {
     private String entities;
     
     
-    public Article(String title, List<String> author, Date publishedDate) {
+    public Article(String title, String description, String url, List<String> author, Date publishedDate) {
         this.title = title;
         this.author = author;
         this.publishedDate = publishedDate;
