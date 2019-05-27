@@ -14,47 +14,46 @@ import javax.net.ssl.HttpsURLConnection;
  *     version: 2.8.1
  *
  * Once you have compiled or downloaded gson-2.8.1.jar, assuming you have placed it in the
- * same folder as this file (GetSentiment.java), you can compile and run this program at
+ * same folder as this file (GetKeyPhrases.java), you can compile and run this program at
  * the command line as follows.
  *
  * Execute the following two commands to build and run (change gson version if needed):
- * javac GetSentiment.java -classpath .;gson-2.8.1.jar -encoding UTF-8
- * java -cp .;gson-2.8.1.jar GetSentiment
+ * javac GetKeyPhrases.java -classpath .;gson-2.8.1.jar -encoding UTF-8
+ * java -cp .;gson-2.8.1.jar GetKeyPhrases
  */
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-class Page{
+class Page {
     public String id, language, text;
 
-    public Page(String id, String language, String text) {
+    public Page(String id, String language, String text){
         this.id = id;
-        this.language = language;
+		this.language = language;
         this.text = text;
     }
 }
 
-class Pages{
-    public List<Page> documents;
+class Pages {
+	public List<Page> documents;
 
-    public Pages() {
-        this.documents = new ArrayList<Page>();
-    }
-
-    public void add(String id, String language, String text) {
-        this.documents.add(new Page(id, language, text));
-    }
+	public Pages() {
+		this.documents = new ArrayList<Page>();
+	}
+	public void add(String id, String language, String text) {
+	    this.documents.add (new Page (id, language, text));
+	}
 }
 
-public class GetSentiment {
+public class GetKeyPhrases {
 
-    // ***********************************************
-    // *** Update or verify the following values. ***
-    // **********************************************
+// ***********************************************
+// *** Update or verify the following values. ***
+// **********************************************
 
-    // Replace the accessKey string value with your valid access key.
+// Replace the accessKey string value with your valid access key.
     private static String getKey() {
         Path keypath = Paths.get("/home/hzm17/webapp-project/rss-aggregator", "api-key");
         String key = "";
@@ -66,6 +65,7 @@ public class GetSentiment {
         }
         return key;
     }
+
 	static String accessKey = getKey();
 
 // Replace or verify the region.
@@ -78,16 +78,16 @@ public class GetSentiment {
 // a free trial access key, you should not need to change this region.
 	static String host = "https://uksouth.api.cognitive.microsoft.com";
 
-	static String path = "/text/analytics/v2.1/sentiment";
+	static String path = "/text/analytics/v2.1/keyPhrases";
 
-	public static String getSinglePageSentiment (Page page) throws Exception {
+	public static String GetSinglePageKeyPhrases (Page page) throws Exception {
 		Pages pages = new Pages();
 		pages.add(page.id, page.language, page.text);
-		return getTheSentiment(pages);
+		return GetKeyPhrases(pages);
     }
     
-	public static String getTheSentiment (Pages pages) throws Exception {
-		String text = new Gson().toJson(pages);
+	public static String GetKeyPhrases (Pages documents) throws Exception {
+		String text = new Gson().toJson(documents);
 		byte[] encoded_text = text.getBytes("UTF-8");
 
 		URL url = new URL(host+path);
@@ -120,24 +120,15 @@ public class GetSentiment {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(json);
 	}
-
-
-/*	public static void main(String[] args) throws Exception {
-		Page page = new Page("1", "en","I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
-		System.out.println(getSinglePageSentiment(page));
-	}
-*/
-/*    private static void getFeedSentiment() {
-			Documents documents = new Documents ();
-			documents.add ("1", "en","I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
-        
-    }*/
-/*	public static void main (String[] args) {
+/*
+	public static void main (String[] args) {
 		try {
-			Pages documents = new Pages();
-			documents.add ("1", "en","I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
+			Documents documents = new Documents ();
+			documents.add ("1", "en", "I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
+			documents.add ("2", "es", "Si usted quiere comunicarse con Carlos, usted debe de llamarlo a su telefono movil. Carlos es muy responsable, pero necesita recibir una notificacion si hay algun problema.");
+			documents.add ("3", "en", "The Grand Hotel is a new hotel in the center of Seattle. It earned 5 stars in my review, and has the classiest decor I've ever seen.");
 
-			String response = getTheSentiment (documents);
+			String response = GetKeyPhrases (documents);
 			System.out.println (prettify (response));
 		}
 		catch (Exception e) {
