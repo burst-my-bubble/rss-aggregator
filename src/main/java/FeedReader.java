@@ -1,23 +1,16 @@
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBObject;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.*;
 
-import com.rometools.rome.feed.synd.SyndContent;
-import com.rometools.rome.feed.synd.SyndEntry;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
+import java.net.URL;
+
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import java.util.stream.Collectors;
-import javax.xml.parsers.DocumentBuilder;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
      * It Reads and prints any RSS/Atom feed type.
@@ -37,9 +30,12 @@ import org.bson.Document;
                 "https://www.telegraph.co.uk/rss.xml",
                 "https://www.huffingtonpost.co.uk/feeds/index.xml",
                 "http://www.pinknews.co.uk/feed/");*/
+        private static final ReplaceOptions REPLACE_OPTIONS
+          = ReplaceOptions.createReplaceOptions(new UpdateOptions().upsert(true));
 
-        public static List<Document> getUri(String url) {
-            List<String> articles = new ArrayList<>();
+        public static void getUri(String url,
+            ObjectId id,
+            MongoCollection<Document> articles) {
             try {
                 // Replace with getting urls from db
                 URL feedUrl = new URL(url);
@@ -47,18 +43,20 @@ import org.bson.Document;
                 SyndFeedInput input = new SyndFeedInput();
                 SyndFeed feed = input.build(new XmlReader(feedUrl));
 
-                return feed.getEntries().stream().map(e ->
-                    new Document("title", e.getTitle())
+                feed.getEntries().stream().forEach(e ->
+                    articles.replaceOne(
+                        new Document("url", e.getUri()),
+                        new Document("title", e.getTitle())
                        .append("description", e.getDescription().getValue())
-                       .append("uri", e.getUri())
-                       .append("publishedDate", e.getPublishedDate())
+                       .append("url", e.getUri())
+                       .append("published_date", e.getPublishedDate())
                        .append("author", e.getAuthors().stream().map(f -> f.getName()).collect(Collectors.toList()))
-                ).collect(Collectors.toList());
+                       .append("feed_id", id), REPLACE_OPTIONS)
+                );
             }
             catch (Exception ex) {
                 ex.printStackTrace();
                 System.out.println("ERROR: "+ex.getMessage());
-                throw new RuntimeException(ex);
             }
         }
 

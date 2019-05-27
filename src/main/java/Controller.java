@@ -6,9 +6,11 @@ import com.mongodb.client.MongoDatabase;
 
 import java.util.Iterator;
 import org.bson.Document;
-import com.mongodb.MongoCredential;
+import org.bson.types.ObjectId;
 
 public class Controller {
+
+
   public static void main(String[] args) {
     // Creating a Mongo client
     MongoClient mongo = MongoClients.create();
@@ -26,8 +28,9 @@ public class Controller {
     //System.out.println("Collection created successfully");
 
     // Retieving a collection
-    MongoCollection<Document> collection = database.getCollection("rssFeeds");
-    FindIterable<Document> iterDoc = collection.find();
+    MongoCollection<Document> articles = database.getCollection("articles");
+    MongoCollection<Document> feeds = database.getCollection("feeds");
+    FindIterable<Document> iterDoc = feeds.find();
     int i = 1;
 
     // Getting the iterator
@@ -35,8 +38,9 @@ public class Controller {
 
     while (it.hasNext()) {
       Document d = (Document) it.next();
+      System.out.println(d);
       String k = (String) d.get("url");
-      collection.insertMany(FeedReader.getUri(k));
+      FeedReader.getUri(k, (ObjectId) d.get("_id"), articles);
       System.out.println(k);
       i++;
     }
