@@ -1,6 +1,7 @@
 import java.util.List;
 
 public interface PersistentStorage {
-    public List<Pair<String, String>> getFeeds();
-    public void insertArticle(Article article);
+    public List<Pair<String, Object>> getFeeds();
+    public boolean urlExists(String url);
+    public void insertArticles(List<Article> article);
 }

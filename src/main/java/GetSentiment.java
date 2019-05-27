@@ -26,28 +26,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-class Page{
-    public String id, language, text;
-
-    public Page(String id, String language, String text) {
-        this.id = id;
-        this.language = language;
-        this.text = text;
-    }
-}
-
-class Pages{
-    public List<Page> documents;
-
-    public Pages() {
-        this.documents = new ArrayList<Page>();
-    }
-
-    public void add(String id, String language, String text) {
-        this.documents.add(new Page(id, language, text));
-    }
-}
-
 public class GetSentiment {
 
     // ***********************************************
@@ -114,15 +92,7 @@ public class GetSentiment {
 		return response.toString();
     }
 
-	public static String prettify(String json_text) {
-		JsonParser parser = new JsonParser();
-		JsonObject json = parser.parse(json_text).getAsJsonObject();
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		return gson.toJson(json);
-	}
-
-
-/*	public static void main(String[] args) throws Exception {
+	/*	public static void main(String[] args) throws Exception {
 		Page page = new Page("1", "en","I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.");
 		System.out.println(getSinglePageSentiment(page));
 	}

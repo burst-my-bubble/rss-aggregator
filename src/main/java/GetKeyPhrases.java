@@ -26,27 +26,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-class Page {
-    public String id, language, text;
-
-    public Page(String id, String language, String text){
-        this.id = id;
-		this.language = language;
-        this.text = text;
-    }
-}
-
-class Pages {
-	public List<Page> documents;
-
-	public Pages() {
-		this.documents = new ArrayList<Page>();
-	}
-	public void add(String id, String language, String text) {
-	    this.documents.add (new Page (id, language, text));
-	}
-}
-
 public class GetKeyPhrases {
 
 // ***********************************************
