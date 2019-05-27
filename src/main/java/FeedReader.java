@@ -67,7 +67,7 @@ public class FeedReader {
 
     /* Extracts html body for a document at a given URI */
     private static String getHTML(Document a) throws IOException {
-        URL url = new URL(a.get("uri").toString());
+        URL url = new URL(a.get("url").toString());
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 
         String inputLine;
@@ -110,14 +110,4 @@ public class FeedReader {
 
         return articles;
     }
-
-
-       /* public static void main(String[] args) {
-            ExecutorService executorService = Executors.newFixedThreadPool(4);
-            for (String sourceUrl : newsSources) {
-                executorService.submit(() -> getUri(sourceUrl));
-            }
-
-        }*/
-
-    }
+}
