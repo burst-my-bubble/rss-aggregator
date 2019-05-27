@@ -76,9 +76,10 @@ public class FeedReader {
     }
 
 
-    private static void storeSentimentAndKeyPhrases(Document article, Page page) throws Exception {
+    private static void updateDBWithSentimentAndEntities(Document article, Page page) throws Exception {
         article.append("sentiment", GetSentiment.getSinglePageSentiment(page));
         article.append("keyPhrases", GetKeyPhrases.GetSinglePageKeyPhrases(page));
+        article.append("entities", GetEntities.GetSinglePageEntity(page));
     }
 
 
@@ -96,7 +97,7 @@ public class FeedReader {
         });
 
         for (int i = 0; i < articles.size(); i++) {
-            storeSentimentAndKeyPhrases(articles.get(i), toBeAnalysed.documents.get(i));
+            updateDBWithSentimentAndEntities(articles.get(i), toBeAnalysed.documents.get(i));
         }
 
         System.out.println(articles);
