@@ -4,14 +4,19 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
 import java.util.Iterator;
+
+import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class Controller {
+  private static final ReplaceOptions REPLACE_OPTIONS
+        = ReplaceOptions.createReplaceOptions(new UpdateOptions().upsert(true));
 
-
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     // Creating a Mongo client
     MongoClient mongo = MongoClients.create();
 
@@ -33,16 +38,18 @@ public class Controller {
     FindIterable<Document> iterDoc = feeds.find();
     int i = 1;
 
-    // Getting the iterator
     Iterator it = iterDoc.iterator();
-
-    while (it.hasNext()) {
-      Document d = (Document) it.next();
-      System.out.println(d);
-      String k = (String) d.get("url");
-      FeedReader.getUri(k, (ObjectId) d.get("_id"), articles);
-      System.out.println(k);
-      i++;
+      while (it.hasNext()) {
+        Document d = (Document) it.next();
+        System.out.println(d);
+        String k = (String) d.get("url");
+        List<Document> articlesList = FeedReader.getArticles((ObjectId) d.get("_id"), k);
+        FeedReader.processArticles(articlesList);
+        articlesList.forEach(e ->
+          articles.replaceOne(new Document("url", e.get("url")), e, REPLACE_OPTIONS)
+        );
+        System.out.println(k);
+        i++;
+      }
     }
   }
-}
