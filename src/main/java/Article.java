@@ -1,6 +1,9 @@
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class is a representation of a news article.
+ */
 public class Article {
     
     private String title;
@@ -19,10 +22,22 @@ public class Article {
         this.publishedDate = publishedDate;
     }
 
+    /**
+     * Sentiment is a value calculated by the Azure Text Analytics API of a given
+     * article. It used to determine how positive or negative that article is.
+     * 
+     * @param sentiment ranges from 0 (negative) to 1 (positive)
+     */
     public void addSentiment(float sentiment) {
         this.sentiment = sentiment;
     }
 
+    /**
+     * Entities are determined by the Azure Text Analytics API for each article.
+     * Entities are keywords / phrases that are categorised and contain links to more
+     * information about them.
+     * @param entities is in the format of a JSON document
+     */
     public void addEntities(String entities) {
         this.entities = entities;
     }

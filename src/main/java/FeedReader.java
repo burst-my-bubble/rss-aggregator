@@ -1,6 +1,3 @@
-
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,29 +19,16 @@ import de.l3s.boilerpipe.extractors.ArticleExtractor;
 
 public class FeedReader {
 
-    
-
-    /*
-     * Returns a list of all the news articles in the RSS feed at a given news
-     * site's URL. Each article is an entry in the database.
+    /**
+     * Gets a list of all news articles in the RSS feed at a given news site's
+     * URL. Each article is also entered into the database.
+     * @param feedId
+     * @param url the location of the news source
+     * @return a list of Mongo documents corresponding to the articles
      */
-
-        /*private static final List<String> newsSources = List.of("http://feeds.bbci.co.uk/news/rss.xml",
-                "http://rss.cnn.com/rss/edition.rss",
-                "https://www.dailymail.co.uk/articles.rss",
-                "https://www.buzzfeed.com/index.xml",
-                "https://www.theguardian.com/uk/rss",
-                "https://9to5mac.com/feed/",
-                "https://www.thesun.co.uk/feed/",
-                "https://www.telegraph.co.uk/rss.xml",
-                "https://www.huffingtonpost.co.uk/feeds/index.xml",
-                "http://www.pinknews.co.uk/feed/");*/
-
-
     public static List<Document> getArticles(ObjectId feedId, String url) {
         List<String> articles = new ArrayList<>();
         try {
-            // Replace with getting urls from db
             URL feedUrl = new URL(url);
 
             SyndFeedInput input = new SyndFeedInput();
@@ -65,9 +49,13 @@ public class FeedReader {
         }
     }
 
-    /* Extracts html body for a document at a given URI */
-    private static String getHTML(Document a) throws IOException {
-        URL url = new URL(a.get("url").toString());
+    /**
+     * Extracts the html body for a document at that document's given URL.
+     * @param doc the news article that you want to get the HTML of
+     * @return the HTML of the document
+     */
+    private static String getHTML(Document doc) throws IOException {
+        URL url = new URL(doc.get("url").toString());
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 
         String inputLine;
@@ -78,12 +66,22 @@ public class FeedReader {
         return htmlText.toString();
     }
 
-    /* Extracts plain text from a document */
-    private static String getPlainText(Document a) throws BoilerpipeProcessingException, IOException {
-        return ArticleExtractor.INSTANCE.getText(getHTML(a));
+    /**
+     * Extracts the plain text from a document.
+     * @param doc the document that you want to extract the plain text from.
+     * @return the plain text of the document
+     */
+    private static String getPlainText(Document doc) throws BoilerpipeProcessingException, IOException {
+        return ArticleExtractor.INSTANCE.getText(getHTML(doc));
     }
 
 
+    /**
+     * Updates the database entry for a single article with its sentiment,
+     * keyphrases and entities.
+     * @param article the Mongo document entry in the DB for that article
+     * @param page the Azure API representation of the article
+     */
     private static void updateDBWithSentimentAndEntities(Document article, Page page) throws Exception {
         article.append("sentiment", GetSentiment.getSinglePageSentiment(page));
         article.append("keyPhrases", GetKeyPhrases.GetSinglePageKeyPhrases(page));
@@ -93,6 +91,15 @@ public class FeedReader {
 
     /* Analyses all the articles and stores the key phrases and sentiment value in
             the database */
+
+
+
+    /**
+     * Analyses all the given articles, updating their entries in the DB with their
+     * keyphrases, entities and sentiment.
+     * @param articles the list of Mongo docs which haven't been analysed
+     * @return a list of updated Mongo documents
+     */
     public static List<Document> processArticles(List<Document> articles) throws Exception {
         Pages toBeAnalysed = new Pages();
         IntStream.range(0, articles.size()).forEach(a -> {
