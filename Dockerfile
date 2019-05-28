@@ -4,4 +4,4 @@ RUN apt-get update -y
 RUN apt-get install -y maven
 
 COPY . .
-CMD mvn package
+RUN mvn package
