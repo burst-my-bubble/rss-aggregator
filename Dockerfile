@@ -1,7 +1,7 @@
 FROM openjdk:latest
 
-RUN apt update
-RUN apt install -y maven
+RUN apt-get update
+RUN apt-get install -y maven
 
 COPY . .
 CMD mvn package
