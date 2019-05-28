@@ -14,7 +14,7 @@ public class Article {
     private String url;
     private String description;
     
-    public Article(String ttle, String description, String url, List<String> author, Date publishedDate) {
+    public Article(String title, String description, String url, List<String> author, Date publishedDate) {
         this.title = title;
         this.author = author;
         this.url = url;

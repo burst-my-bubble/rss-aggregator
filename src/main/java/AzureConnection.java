@@ -25,7 +25,7 @@ public class AzureConnection {
         this.accessKey = accessKey;
     }
 
-    private static String getKey() {
+    public static String getKey() {
         Path keypath = Paths.get("/home/hzm17/webapp-project/rss-aggregator", "api-key");
         String key = "";
         try {

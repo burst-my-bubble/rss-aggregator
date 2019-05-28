@@ -41,8 +41,15 @@ public class MongoPersistentStorage implements PersistentStorage {
         return result;
     }
 
+    /**
+     * Gets a list of all news articles in the RSS feed at a given news site's
+     * URL. Each article is also entered into the database.
+     * @param feedId
+     * @param url the location of the news source
+     * @return a list of Mongo documents corresponding to the articles
+     */
     @Override
-    public void insertArticles(List<Article> articlesToBeInserted) {
+    public void insertArticles(List<Article> articlesToBeInserted, Object feedId) {
         articles.insertMany(articlesToBeInserted.stream().map(e -> 
             new Document()
                 .append("title", e.getTitle())
@@ -50,6 +57,7 @@ public class MongoPersistentStorage implements PersistentStorage {
                 .append("published_date", e.getPublishedDate())
                 .append("url", e.getUrl())
                 .append("description", e.getDescription())
+                .append("feed_id", feedId)
         ).collect(Collectors.toList()));
     }
     
