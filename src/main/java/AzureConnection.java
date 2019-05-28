@@ -19,7 +19,7 @@ import com.google.gson.JsonParser;
 /**
  * Manges the connection to Azure and handles the requests to it.
  */
-public class AzureConnection {
+public class AzureConnection implements TextAnalyser {
 
     private final String accessKey;
     static String host = "https://uksouth.api.cognitive.microsoft.com";

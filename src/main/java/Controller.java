@@ -15,34 +15,43 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Controller {
-  public static void main(String[] args) throws Exception {
-    PersistentStorage storage = new MongoPersistentStorage();
-    ArticleReader reader = new RomeArticleReader();
-    AzureConnection conn = new AzureConnection(AzureConnection.getKey());
+
+  private static Pages convertArticlesToPages(List<Article> articles) throws IOException, BoilerpipeProcessingException {
+    Pages pages = new Pages();
+    for (int i = 0; i < articles.size(); i++) {
+      Article article = articles.get(i);
+      String html = getHTML(article.getUrl());
+      String imageUrl = getImage(html);
+      String mainText = getPlainText(html);
+      pages.add(Integer.toString(i), "en", mainText);
+    }
+    return pages;
+  }
+
+  public static void aggregateArticles(PersistentStorage storage, ArticleReader reader, TextAnalyser analyser)
+      throws IOException, BoilerpipeProcessingException {
     List<Pair<String, Object>> feeds = storage.getFeeds();
     for (Pair<String, Object> feed: feeds) {
-      System.out.println(feed.getFirst());
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
           .collect(Collectors.toList());
 
-      Pages pages = new Pages();
-
-      for (int i = 0; i < toBeInserted.size(); i++) {
-        Article article = toBeInserted.get(i);
-        String html = getHTML(article.getUrl());
-        String imageUrl = getImage(html);
-        System.out.println("\t" + article.getTitle() + " " + imageUrl);
-        String mainText = getPlainText(html);
-        pages.add(Integer.toString(i), "en", mainText);
-      }
-
+      Pages pages = convertArticlesToPages(toBeInserted);
+      //DO SNETIMENT AND ENTITY STUFF
       //String entities = conn.getEntities(pages);
       //String sentiment = conn.getSentiment(pages);
       
       storage.insertArticles(toBeInserted, feed.getSecond());
     }
+
+  }
+
+  public static void main(String[] args) throws Exception {
+    PersistentStorage storage = new MongoPersistentStorage();
+    ArticleReader reader = new RomeArticleReader();
+    TextAnalyser analyser = new AzureConnection(AzureConnection.getKey());
+    aggregateArticles(storage, reader, analyser);
   }
 
   /**

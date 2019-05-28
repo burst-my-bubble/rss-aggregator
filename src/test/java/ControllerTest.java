@@ -1,7 +1,13 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import org.jmock.Expectations;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
@@ -33,5 +39,40 @@ class ControllerTest {
     assert(htmlText.contains("This domain is established to be used for illustra"));
   }
 
+  @Rule
+  public JUnitRuleMockery context = new JUnitRuleMockery();
+  TextAnalyser analyser = context.mock(TextAnalyser.class);
+  PersistentStorage storage = context.mock(PersistentStorage.class);
+  ArticleReader reader = context.mock(ArticleReader.class);
+
+  @Test
+  public void retrievesArticlesAndInsertsIntoDatabase() throws IOException, BoilerpipeProcessingException {
+    List<Pair<String, Object>> expectedFeed = new ArrayList();
+    List<Article> articles = new ArrayList();
+    articles.add(new Article("a", "b", "https://example.com", List.of("a"), new Date()));
+    expectedFeed.add(new Pair("https://example.com", null));
+    context.checking(new Expectations() {{
+      oneOf(storage).getFeeds(); will(returnValue(expectedFeed));
+      oneOf(reader).getArticles("https://example.com"); will(returnValue(articles));
+      oneOf(storage).urlExists("https://example.com"); will(returnValue(false));
+      oneOf(storage).insertArticles(articles, null);
+    }});
+    Controller.aggregateArticles(storage, reader, analyser);
+  }
   
+  @Test
+  public void doesntInsertArticleIfAlreadyExists() throws IOException, BoilerpipeProcessingException {
+    List<Pair<String, Object>> expectedFeed = new ArrayList();
+    List<Article> articles = new ArrayList();
+    articles.add(new Article("a", "b", "https://example.com", List.of("a"), new Date()));
+    expectedFeed.add(new Pair("https://example.com", null));
+    context.checking(new Expectations() {{
+      oneOf(storage).getFeeds(); will(returnValue(expectedFeed));
+      oneOf(reader).getArticles("https://example.com"); will(returnValue(articles));
+      oneOf(storage).urlExists("https://example.com"); will(returnValue(true));
+      oneOf(storage).insertArticles(List.of(), null);
+    }});
+    Controller.aggregateArticles(storage, reader, analyser);
+  }
+
 }
