@@ -57,7 +57,7 @@ public class Controller {
    * @param doc the news article that you want to get the HTML of
    * @return the HTML of the document
    */
-  private static String getHTML(String urlAsString) throws IOException {
+  public static String getHTML(String urlAsString) throws IOException {
     URL url = new URL(urlAsString);
     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -74,7 +74,7 @@ public class Controller {
    * @param doc the document that you want to extract the plain text from.
    * @return the plain text of the document
    */
-  private static String getPlainText(String text) throws BoilerpipeProcessingException, IOException {
+  public static String getPlainText(String text) throws BoilerpipeProcessingException, IOException {
     return ArticleExtractor.INSTANCE.getText(text);
   }
 
