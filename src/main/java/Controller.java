@@ -32,7 +32,7 @@ public class Controller {
       for (int i = 0; i < toBeInserted.size(); i++) {
         Article article = toBeInserted.get(i);
         String html = getHTML(article.getUrl());
-        String imageUrl = null; //getImage(html);
+        String imageUrl = getImage(html);
         System.out.println("\t" + article.getTitle() + " " + imageUrl);
         String mainText = getPlainText(html);
         pages.add(Integer.toString(i), "en", mainText);
