@@ -16,6 +16,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Manges the connection to Azure and handles the requests to it.
+ */
 public class AzureConnection {
 
     private final String accessKey;
@@ -25,6 +28,10 @@ public class AzureConnection {
         this.accessKey = accessKey;
     }
 
+    /**
+     * Gets the required key from your local storage.
+     * @return the API key as a string
+     */
     public static String getKey() {
         Path keypath = Paths.get("/home/hzm17/webapp-project/rss-aggregator", "api-key");
         String key = "";
@@ -37,6 +44,15 @@ public class AzureConnection {
         return key;
     }
 
+    /**
+     * Handles a generic request to the Azure API and getting its response.
+     * @param path is specific to the Text Analytics function that you want to
+     * use e.g. sentiment analysis, entity recognition
+     * @param pages are used by the Azure API to wrap the information for the 
+     * request
+     * @return the JSON response from Azure API as a string
+     * @throws Exception if there's connection issue
+     */
     public String request(String path, Pages pages) throws Exception {
 		String text = new Gson().toJson(pages);
 		byte[] encoded_text = text.getBytes("UTF-8");
