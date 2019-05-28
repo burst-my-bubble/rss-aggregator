@@ -10,3 +10,8 @@ build:
   stage: build
   script:
     - docker build -t rss-aggregator .
+
+test:
+  stage: test
+  script:
+    - docker run rss-aggregator mvn test
