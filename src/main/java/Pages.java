@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Stores a list of pages which can be put in a request to the Azure API.
+ */
 public class Pages {
 	public List<Page> documents;
 
