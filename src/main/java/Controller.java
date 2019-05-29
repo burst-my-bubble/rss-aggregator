@@ -160,12 +160,15 @@ public class Controller {
           .filter(a -> !storage.urlExists(a.getUrl()))
           .collect(Collectors.toList());
 
-      Pages pages = convertArticlesToPages(toBeInserted);
-      String entities = analyser.getEntities(pages);
-      String sentiment = analyser.getSentiment(pages);
-      processSentimentAndEntities(sentiment, entities, articles);
+      if(!toBeInserted.isEmpty()) {
+        addImageUrls(toBeInserted);
+        Pages pages = convertArticlesToPages(toBeInserted);
+        String entities = analyser.getEntities(pages);
+        String sentiment = analyser.getSentiment(pages);
+        processSentimentAndEntities(sentiment, entities, articles);
     
-      storage.insertArticles(toBeInserted, feed.getSecond());
+        storage.insertArticles(toBeInserted, feed.getSecond());
+      }
     }
     
      /* List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
