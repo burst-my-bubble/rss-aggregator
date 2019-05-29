@@ -154,7 +154,7 @@ public class Controller {
       throws IOException
       {
     List<Pair<String, Object>> feeds = storage.getFeeds();
-   /* for (Pair<String, Object> feed: feeds) {
+    for (Pair<String, Object> feed: feeds) {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
@@ -166,9 +166,9 @@ public class Controller {
       processSentimentAndEntities(sentiment, entities, articles);
     
       storage.insertArticles(toBeInserted, feed.getSecond());
-    }*/
+    }
     
-      List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
+     /* List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
       System.out.println(articles.size());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
@@ -185,9 +185,9 @@ public class Controller {
         processSentimentAndEntities(sentiment, entities, articles);
         
         storage.insertArticles(toBeInserted, feeds.get(0).getSecond());
-
+      
       }
-
+      */
   }
 
   public static void main(String[] args) throws Exception {
