@@ -91,7 +91,6 @@ public class Controller {
     for (int i = 0; i < articles.size(); i++) {
       Article article = articles.get(i);
       String html = getHTML(article.getUrl());
-      String imageUrl = getImage(html);
       String plainText = getPlainText(html);
       String mainText = plainText.substring(0, Math.min(plainText.length(), 5199));
       pages.add(Integer.toString(i), "en", mainText);
