@@ -34,7 +34,7 @@ public class AzureConnection implements TextAnalyser {
      * @return the API key as a string
      */
     public static String getKey() {
-        Path keypath = Paths.get("/home/hzm17/webapp-project/rss-aggregator", "api-key");
+        Path keypath = Paths.get("./", "api-key");
         String key = "";
         try {
             key = Files.readAllLines(keypath).get(0);

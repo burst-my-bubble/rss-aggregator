@@ -32,7 +32,7 @@ public class Controller {
    * @return a list of pages where each page contains the plaintext corresponding
    * to one of the articles.
    */
-  private static Pages convertArticlesToPages(List<Article> articles) throws IOException {
+  static Pages convertArticlesToPages(List<Article> articles) throws IOException {
     Pages pages = new Pages();
     for (int i = 0; i < articles.size(); i++) {
       Article article = articles.get(i);
