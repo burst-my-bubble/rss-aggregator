@@ -6,6 +6,7 @@ target
 *.org
 api-key
 api-key2
+api-key3
 *.json
 *.swp
 .settings
