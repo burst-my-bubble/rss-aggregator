@@ -14,8 +14,18 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * Controller oversees the process of aggregating and storing the articles.
+ */
 public class Controller {
 
+  /**
+   * Converts a list of articles to a list of pages containing their plaintext.
+   * @param articles is a list of articles, each containing a url to a news article.
+   * @return a list of pages where each page contains the plaintext corresponding
+   * to one of the articles.
+   */
   private static Pages convertArticlesToPages(List<Article> articles) throws IOException, BoilerpipeProcessingException {
     Pages pages = new Pages();
     for (int i = 0; i < articles.size(); i++) {
@@ -28,6 +38,16 @@ public class Controller {
     return pages;
   }
 
+  /**
+   * Goes through each of the feeds, extracting and processing all of the articles,
+   * storing them in a persistent storage.
+   * @param storage is the destination for the articles to be put in
+   * @param reader gets the articles from the feed
+   * @param analyser process the articles to get the required data
+   * @throws IOException thrown if there's a connection failure with the URL
+   * @throws BoilerpipeProcessingException is thrown if there's an issue with 
+   * getting the plaintext from the html
+   * */
   public static void aggregateArticles(PersistentStorage storage, ArticleReader reader, TextAnalyser analyser)
       throws IOException, BoilerpipeProcessingException {
     List<Pair<String, Object>> feeds = storage.getFeeds();
@@ -69,7 +89,6 @@ public class Controller {
   public static String getHTML(String urlAsString) throws IOException {
     URL url = new URL(urlAsString);
     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-
     String inputLine;
     StringBuilder htmlText = new StringBuilder();
     while ((inputLine = in.readLine()) != null)
