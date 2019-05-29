@@ -11,6 +11,9 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
 
+/**
+ * A Mongo database to store feeds and articles with their respective data.
+ */
 public class MongoPersistentStorage implements PersistentStorage {
 
     private final MongoCollection<Document> articles;
@@ -24,11 +27,18 @@ public class MongoPersistentStorage implements PersistentStorage {
         this.feeds = database.getCollection("feeds");
     }
 
+    /**
+     * {@inheritDoc}
+     * @param url is the url of an article.
+     */
     @Override
     public boolean urlExists(String url) {
         return articles.find(new Document("url", url)).first() != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Pair<String, Object>> getFeeds() {
         FindIterable<Document> iterDoc = feeds.find();
@@ -42,11 +52,10 @@ public class MongoPersistentStorage implements PersistentStorage {
     }
 
     /**
-     * Gets a list of all news articles in the RSS feed at a given news site's
-     * URL. Each article is also entered into the database.
-     * @param feedId
-     * @param url the location of the news source
-     * @return a list of Mongo documents corresponding to the articles
+     * {@inheritDoc}
+     * @param articlesToBeInserted is the list of articles to be inserted into
+     * the Mongo storage.
+     * @param feedId is the id of the news source.
      */
     @Override
     public void insertArticles(List<Article> articlesToBeInserted, Object feedId) {
@@ -60,5 +69,4 @@ public class MongoPersistentStorage implements PersistentStorage {
                 .append("feed_id", feedId)
         ).collect(Collectors.toList()));
     }
-    
 }

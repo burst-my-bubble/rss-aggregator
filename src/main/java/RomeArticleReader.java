@@ -7,15 +7,21 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+/**
+ * An article reader that uses Rome to retrieve the articles.
+ */
 public class RomeArticleReader implements ArticleReader {
 
+    /**
+     * {@inheritDoc}
+     * @param url is the url of the news source.
+     * @return a list of all articles at that news source.
+     */
     @Override
     public List<Article> getArticles(String url) {
         List<String> articles = new ArrayList<>();
         try {
-            // Replace with getting urls from db
             URL feedUrl = new URL(url);
-
             SyndFeedInput input = new SyndFeedInput();
             SyndFeed feed = input.build(new XmlReader(feedUrl));
 

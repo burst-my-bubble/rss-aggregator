@@ -139,13 +139,6 @@ public class Controller {
   }
 
   /**
-     * Analyses all the given articles, updating their entries in the DB with their
-     * keyphrases, entities and sentiment.
-     * @param articles the list of Mongo docs which haven't been analysed
-     * @return a list of updated Mongo documents
-     */
-
-  /**
    * Extracts the html body for a document at that document's given URL.
    * @param doc the news article that you want to get the HTML of
    * @return the HTML of the document
