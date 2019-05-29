@@ -13,10 +13,6 @@ import org.junit.jupiter.api.Test;
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 
 class ControllerTest {
-  @Test
-  public void onePlusOneShouldBeTwo() {
-    assertEquals(1 + 1, 2);
-  }
 
   @Test
   public void getPlainTextExtractsPlainTextFromHTML() throws BoilerpipeProcessingException, IOException {
