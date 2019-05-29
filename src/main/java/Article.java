@@ -13,6 +13,7 @@ public class Article {
     private List<Pair<String, String>> entities;
     private String url;
     private String description;
+    private String imageUrl;
     
     public Article(String title, String description, String url, List<String> author, Date publishedDate) {
         this.title = title;
@@ -41,6 +42,10 @@ public class Article {
         this.entities = entities;
     }
 
+    public void addImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -60,4 +65,5 @@ public class Article {
     public String getDescription() {
         return description;
     }
+
 }

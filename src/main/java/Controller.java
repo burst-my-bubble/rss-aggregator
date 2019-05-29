@@ -58,14 +58,26 @@ public class Controller {
 
   /**
    * Gets the main image of a news article from its html.
-   * @param html is the html of an article.
+   * @param article is the article that you want the image of.
    * @return the url to the image.
    */
-  public static String getImage(String html) {
+  public static String getImage(Article article) {
+    String html = "";
+    try {
+      html = getHTML(article.getUrl());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     Document doc = Jsoup.parse(html);
     Elements els = doc.select("head").select("meta[property=\"og:image\"]");
     Element el = els.first();
     return el == null ? null : el.attr("content");
+  }
+
+  public static void addImageUrls(List<Article> articles) {
+    for (Article article : articles) {
+      article.addImage(getImage(article));
+    }
   }
 
   /**
@@ -164,6 +176,7 @@ public class Controller {
           .limit(1)
           .collect(Collectors.toList());
       if(!toBeInserted.isEmpty()) {
+        addImageUrls(toBeInserted);
         Pages pages = convertArticlesToPages(toBeInserted);
         //DO SNETIMENT AND ENTITY STUFF
         String entities = analyser.getEntities(pages);
