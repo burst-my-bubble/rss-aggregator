@@ -11,8 +11,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -113,41 +111,10 @@ public class AzureConnection implements TextAnalyser {
         return result;
     }
 
-    public String getKeyPhrases(Pages pages) throws Exception {
-        return request("/text/analytics/v2.1/keyPhrases", pages);
-    }
-
     public static String prettify(String json_text) {
 		JsonParser parser = new JsonParser();
 		JsonObject json = parser.parse(json_text).getAsJsonObject();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(json);
-	}
-	public static void main (String[] args) {
-        AzureConnection conn = new AzureConnection(getKey());
-		try {
-			Pages documents = new Pages ();
-            documents.add ("1", "en", "Microsoft is an It company.");
-
-            String response = conn.getEntities(documents);
-            JsonParser parser = new JsonParser();
-            JsonObject json = parser.parse(response).getAsJsonObject();
-            JsonArray docs = json.getAsJsonArray("documents");
-            for (JsonElement el: docs) {
-                JsonObject obj = el.getAsJsonObject();
-                System.out.println(obj.get("id").getAsInt());
-                JsonArray entities = obj.getAsJsonArray("entities");
-                for (JsonElement el2: entities) {
-                    JsonObject obj2 = el2.getAsJsonObject();
-                    System.out.println(obj2.get("name").getAsString());
-                    System.out.println(obj2.get("type").getAsString());
-                }
-            }
-
-		//	System.out.println (prettify (response));
-		}
-		catch (Exception e) {
-			System.out.println (e);
-		}
 	}
 }
