@@ -30,6 +30,7 @@ public class AzureConnection implements TextAnalyser {
 
     /**
      * Gets the required key from your local storage.
+     * 
      * @return the API key as a string
      */
     public static String getKey() {
@@ -46,46 +47,60 @@ public class AzureConnection implements TextAnalyser {
 
     /**
      * Handles a generic request to the Azure API and getting its response.
-     * @param path is specific to the Text Analytics function that you want to
-     * use e.g. sentiment analysis, entity recognition
-     * @param pages are used by the Azure API to wrap the information for the 
-     * request
+     * 
+     * @param path  is specific to the Text Analytics function that you want to use
+     *              e.g. sentiment analysis, entity recognition
+     * @param pages are used by the Azure API to wrap the information for the
+     *              request
      * @return the JSON response from Azure API as a string
      * @throws Exception if there's connection issue
      */
     public String request(String path, Pages pages) throws Exception {
-		String text = new Gson().toJson(pages);
-		byte[] encoded_text = text.getBytes("UTF-8");
+        String text = new Gson().toJson(pages);
+        byte[] encoded_text = text.getBytes("UTF-8");
 
-		URL url = new URL(host + path);
-		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Content-Type", "text/json");
-		connection.setRequestProperty("Ocp-Apim-Subscription-Key", accessKey);
-		connection.setDoOutput(true);
+        URL url = new URL(host + path);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "text/json");
+        connection.setRequestProperty("Ocp-Apim-Subscription-Key", accessKey);
+        connection.setDoOutput(true);
 
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-		wr.write(encoded_text, 0, encoded_text.length);
-		wr.flush();
-		wr.close();
+        wr.write(encoded_text, 0, encoded_text.length);
+        wr.flush();
+        wr.close();
 
-		StringBuilder response = new StringBuilder();
-		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		String line;
-		while ((line = in.readLine()) != null) {
-			response.append(line);
-		}
-		in.close();
+        System.out.println(text);
+        StringBuilder response = new StringBuilder();
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line;
+        while ((line = in.readLine()) != null) {
+            response.append(line);
+        }
+        in.close();
 
-		return response.toString();
+        return response.toString();
     }
 
-    public String getSentiment(Pages pages) throws Exception {
-      return request("/text/analytics/v2.1/sentiment", pages);
+    public String getSentiment(Pages pages) {
+        String result = "";
+        try {
+            result = request("/text/analytics/v2.1/sentiment", pages);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    public String getEntities(Pages pages) throws Exception {
-        return request("/text/analytics/v2.1/entities", pages);
+    public String getEntities(Pages pages) {
+        String result = "";
+        try {
+            result = request("/text/analytics/v2.1/entities", pages);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public String getKeyPhrases(Pages pages) throws Exception {
@@ -102,7 +117,7 @@ public class AzureConnection implements TextAnalyser {
         AzureConnection conn = new AzureConnection(getKey());
 		try {
 			Pages documents = new Pages ();
-			documents.add ("1", "en", "Microsoft is an It company.");
+            documents.add ("1", "en", "Microsoft is an It company.");
 
             String response = conn.getEntities(documents);
             JsonParser parser = new JsonParser();
@@ -119,7 +134,7 @@ public class AzureConnection implements TextAnalyser {
                 }
             }
 
-			System.out.println (prettify (response));
+		//	System.out.println (prettify (response));
 		}
 		catch (Exception e) {
 			System.out.println (e);

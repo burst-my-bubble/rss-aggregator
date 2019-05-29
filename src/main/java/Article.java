@@ -10,7 +10,7 @@ public class Article {
     private List<String> author;
     private Date publishedDate;
     private float sentiment;
-    private String entities;
+    private List<Pair<String, String>> entities;
     private String url;
     private String description;
     
@@ -38,7 +38,7 @@ public class Article {
      * information about them.
      * @param entities is in the format of a JSON document
      */
-    public void addEntities(String entities) {
+    public void addEntities(List<Pair<String, String>> entities) {
         this.entities = entities;
     }
 
