@@ -101,9 +101,9 @@ public class Controller {
   private static void processSentimentAndEntities(String sentimentAsString, String entitiesAsString, List<Article> articles) {
     JsonParser parser = new JsonParser();
     JsonObject json = parser.parse(entitiesAsString).getAsJsonObject();
-    JsonArray docs = json.getAsJsonArray("entitiesAsString");
+    JsonArray docs = json.getAsJsonArray("documents");
     JsonObject jsonSentiment = parser.parse(sentimentAsString).getAsJsonObject();
-    JsonArray docsSentiment = jsonSentiment.getAsJsonArray("sentimentAsString");
+    JsonArray docsSentiment = jsonSentiment.getAsJsonArray("documents");
 
     if (docsSentiment != null) {
       for (JsonElement el: docsSentiment) {
@@ -144,7 +144,7 @@ public class Controller {
       throws IOException
       {
     List<Pair<String, Object>> feeds = storage.getFeeds();
-    for (Pair<String, Object> feed: feeds) {
+   /* for (Pair<String, Object> feed: feeds) {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
@@ -156,8 +156,8 @@ public class Controller {
       processSentimentAndEntities(sentiment, entities, articles);
     
       storage.insertArticles(toBeInserted, feed.getSecond());
-    }
-    /*
+    }*/
+    
       List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
       System.out.println(articles.size());
       List<Article> toBeInserted = articles.stream()
@@ -175,7 +175,7 @@ public class Controller {
         
         storage.insertArticles(toBeInserted, feeds.get(0).getSecond());
 
-      }*/
+      }
 
   }
 
