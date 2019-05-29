@@ -30,7 +30,6 @@ public class AzureConnection implements TextAnalyser {
 
     /**
      * Gets the required key from your local storage.
-     * 
      * @return the API key as a string
      */
     public static String getKey() {
@@ -39,7 +38,6 @@ public class AzureConnection implements TextAnalyser {
         try {
             key = Files.readAllLines(keypath).get(0);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return key;
@@ -83,6 +81,12 @@ public class AzureConnection implements TextAnalyser {
         return response.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param pages wrap the text to be analysed in a format that Azure API
+     * understands.
+     * @return a JSON string containing the sentiment values of all pages.
+     */
     public String getSentiment(Pages pages) {
         String result = "";
         try {
@@ -93,6 +97,12 @@ public class AzureConnection implements TextAnalyser {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param pages wrap the text to be analysed in a format that Azure API
+     * understands.
+     * @return a JSON string containing the entities of all pages.
+     */
     public String getEntities(Pages pages) {
         String result = "";
         try {
