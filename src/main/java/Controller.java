@@ -27,6 +27,49 @@ import com.google.gson.JsonParser;
 public class Controller {
 
   /**
+   * Extracts the html body for a document at that document's given URL.
+   * @param doc the news article that you want to get the HTML of.
+   * @return the HTML of the document.
+   */
+  public static String getHTML(String urlAsString) throws IOException {
+    URL url = new URL(urlAsString);
+    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    String inputLine;
+    StringBuilder htmlText = new StringBuilder();
+    while ((inputLine = in.readLine()) != null)
+      htmlText.append(inputLine);
+    in.close();
+    return htmlText.toString();
+  }
+
+  /**
+   * Extracts the plain text from a document.
+   * @param doc the document that you want to extract the plain text from.
+   * @return the plain text of the document.
+   */
+  public static String getPlainText(String text) throws IOException {
+    String result = "";
+    try {
+      result = ArticleExtractor.INSTANCE.getText(text);
+    } catch (BoilerpipeProcessingException e) {
+      e.printStackTrace();
+    }
+    return result;
+  }
+
+  /**
+   * Gets the main image of a news article from its html.
+   * @param html is the html of an article.
+   * @return the url to the image.
+   */
+  public static String getImage(String html) {
+    Document doc = Jsoup.parse(html);
+    Elements els = doc.select("head").select("meta[property=\"og:image\"]");
+    Element el = els.first();
+    return el == null ? null : el.attr("content");
+  }
+
+  /**
    * Converts a list of articles to a list of pages containing their plaintext.
    * @param articles is a list of articles, each containing a url to a news article.
    * @return a list of pages where each page contains the plaintext corresponding
@@ -46,12 +89,21 @@ public class Controller {
   }
 
 
+  /**
+   * Adds the respective sentiment values and entities to each article.
+   * @param sentimentAsString is a JSON string containing all of the sentiment
+   * values.
+   * @param entitiesAsString is a JSON string containing all of the entities
+   * and their types.
+   * @param articles is the list of articles which don't have any sentiment or
+   * entities yet.
+   */
   private static void processSentimentAndEntities(String sentimentAsString, String entitiesAsString, List<Article> articles) {
     JsonParser parser = new JsonParser();
     JsonObject json = parser.parse(entitiesAsString).getAsJsonObject();
-    JsonArray docs = json.getAsJsonArray("entitiesAsString");
+    JsonArray docs = json.getAsJsonArray("documents");
     JsonObject jsonSentiment = parser.parse(sentimentAsString).getAsJsonObject();
-    JsonArray docsSentiment = jsonSentiment.getAsJsonArray("sentimentAsString");
+    JsonArray docsSentiment = jsonSentiment.getAsJsonArray("documents");
 
     if (docsSentiment != null) {
       for (JsonElement el: docsSentiment) {
@@ -82,34 +134,30 @@ public class Controller {
   /**
    * Goes through each of the feeds, extracting and processing all of the
    * articles, storing them in a persistent storage.
-   * 
-   * @param storage  is the destination for the articles to be put in
-   * @param reader   gets the articles from the feed
-   * @param analyser process the articles to get the required data
-   * @throws BoilerpipeProcessingException
-   * @throws IOException
-   * @throws Exception
+   * @param storage  is the destination for the articles to be put in.
+   * @param reader   gets the articles from the feed.
+   * @param analyser process the articles to get the required data.
+   * @throws IOException if there's an error with the connection for getting the 
+   * articles.
    */
   public static void aggregateArticles(PersistentStorage storage, ArticleReader reader, TextAnalyser analyser)
       throws IOException
       {
     List<Pair<String, Object>> feeds = storage.getFeeds();
-    /*for (Pair<String, Object> feed: feeds) {
+   /* for (Pair<String, Object> feed: feeds) {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
           .collect(Collectors.toList());
 
       Pages pages = convertArticlesToPages(toBeInserted);
-      //DO SNETIMENT AND ENTITY STUFF
       String entities = analyser.getEntities(pages);
-      System.out.println(entities);
       String sentiment = analyser.getSentiment(pages);
-      System.out.println(sentiment);
       processSentimentAndEntities(sentiment, entities, articles);
-      
+    
       storage.insertArticles(toBeInserted, feed.getSecond());
     }*/
+    
       List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
       System.out.println(articles.size());
       List<Article> toBeInserted = articles.stream()
@@ -136,50 +184,5 @@ public class Controller {
     ArticleReader reader = new RomeArticleReader();
     TextAnalyser analyser = new AzureConnection(AzureConnection.getKey());
     aggregateArticles(storage, reader, analyser);
-  }
-
-  /**
-     * Analyses all the given articles, updating their entries in the DB with their
-     * keyphrases, entities and sentiment.
-     * @param articles the list of Mongo docs which haven't been analysed
-     * @return a list of updated Mongo documents
-     */
-
-  /**
-   * Extracts the html body for a document at that document's given URL.
-   * @param doc the news article that you want to get the HTML of
-   * @return the HTML of the document
-   */
-  public static String getHTML(String urlAsString) throws IOException {
-    URL url = new URL(urlAsString);
-    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-    String inputLine;
-    StringBuilder htmlText = new StringBuilder();
-    while ((inputLine = in.readLine()) != null)
-      htmlText.append(inputLine);
-    in.close();
-    return htmlText.toString();
-  }
-
-  /**
-   * Extracts the plain text from a document.
-   * @param doc the document that you want to extract the plain text from.
-   * @return the plain text of the document
-   */
-  public static String getPlainText(String text) throws IOException {
-    String result = "";
-    try {
-      result = ArticleExtractor.INSTANCE.getText(text);
-    } catch (BoilerpipeProcessingException e) {
-      e.printStackTrace();
-    }
-    return result;
-  }
-
-  public static String getImage(String html) {
-    Document doc = Jsoup.parse(html);
-    Elements els = doc.select("head").select("meta[property=\"og:image\"]");
-    Element el = els.first();
-    return el == null ? null : el.attr("content");
   }
 }

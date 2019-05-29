@@ -1,3 +1,6 @@
+/**
+ * Generic pair class.
+ */
 public class Pair<A, B> {
    private final A fst;
    private final B snd;

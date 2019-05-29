@@ -25,8 +25,7 @@ public class Article {
     /**
      * Sentiment is a value calculated by the Azure Text Analytics API of a given
      * article. It used to determine how positive or negative that article is.
-     * 
-     * @param sentiment ranges from 0 (negative) to 1 (positive)
+     * @param sentiment ranges from 0 (negative) to 1 (positive).
      */
     public void addSentiment(float sentiment) {
         this.sentiment = sentiment;
@@ -36,7 +35,7 @@ public class Article {
      * Entities are determined by the Azure Text Analytics API for each article.
      * Entities are keywords / phrases that are categorised and contain links to more
      * information about them.
-     * @param entities is in the format of a JSON document
+     * @param entities is in the format of a JSON document.
      */
     public void addEntities(List<Pair<String, String>> entities) {
         this.entities = entities;

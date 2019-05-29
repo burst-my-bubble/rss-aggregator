@@ -1,3 +1,6 @@
+/**
+ * A format that the Azure API requires for a request.
+ */
 class Page {
     public String id, language, text;
 
