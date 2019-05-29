@@ -67,7 +67,6 @@ public class AzureConnection implements TextAnalyser {
         wr.flush();
         wr.close();
 
-        System.out.println(text);
         StringBuilder response = new StringBuilder();
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String line;
