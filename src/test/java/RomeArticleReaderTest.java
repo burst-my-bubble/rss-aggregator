@@ -43,4 +43,20 @@ class RomeArticleReaderTest {
 
     assertEquals(thirdPartyArticle.getTitle(), adapterArticle.getTitle());
   }
+
+
+  @Test
+  public void returnsSameSizeListAsDirectRead()
+          throws IllegalArgumentException, FeedException, IOException {
+  String url = "https://feeds.bbci.co.uk/news/rss.xml";
+
+  int adapterSize = articleReader.getArticles(url).size();
+  URL feedUrl = new URL(url);
+  SyndFeedInput input = new SyndFeedInput();
+  SyndFeed feed = input.build(new XmlReader(feedUrl));
+
+  int thirdPartySize = feed.getEntries().size();
+
+  assertEquals(thirdPartySize, adapterSize);
+}
 }
