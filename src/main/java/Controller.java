@@ -92,7 +92,7 @@ public class Controller {
       Article article = articles.get(i);
       String html = getHTML(article.getUrl());
       String plainText = getPlainText(html);
-      String mainText = plainText.substring(0, Math.min(plainText.length(), 5199));
+      String mainText = plainText.substring(0, Math.min(plainText.length(), 5119));
       pages.add(Integer.toString(i), "en", mainText);
     }
     return pages;
