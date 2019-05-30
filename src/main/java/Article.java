@@ -66,4 +66,15 @@ public class Article {
         return description;
     }
 
+    public String getImage() {
+        return imageUrl;
+    }
+
+    public float getSentiment() {
+        return sentiment;
+    }
+
+    public List<Pair<String, String>> getEntities() {
+        return entities;
+    }
 }

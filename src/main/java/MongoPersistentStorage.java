@@ -59,14 +59,22 @@ public class MongoPersistentStorage implements PersistentStorage {
      */
     @Override
     public void insertArticles(List<Article> articlesToBeInserted, Object feedId) {
-        articles.insertMany(articlesToBeInserted.stream().map(e -> 
-            new Document()
+        articles.insertMany(articlesToBeInserted.stream().map(e -> {
+            List<Document> docs = e.getEntities().stream().map(entity -> 
+                    new Document()
+                        .append("name", entity.getFirst())
+                        .append("category", entity.getSecond())
+                ).collect(Collectors.toList());
+            return new Document()
                 .append("title", e.getTitle())
                 .append("author", e.getAuthor())
                 .append("published_date", e.getPublishedDate())
                 .append("url", e.getUrl())
                 .append("description", e.getDescription())
                 .append("feed_id", feedId)
-        ).collect(Collectors.toList()));
+                .append("image_url", e.getImage())
+                .append("entities", docs)
+                .append("sentiment", e.getSentiment());
+        }).collect(Collectors.toList()));
     }
 }

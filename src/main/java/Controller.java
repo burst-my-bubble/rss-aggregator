@@ -124,17 +124,21 @@ public class Controller {
     }
     if (docs != null) {
       //ASSUMES THAT THEY ARE ORDERED
-      for (int i = 0; i < Math.min(docs.size(), 5); i++) {
-        JsonElement el = docs.get(i);
+      for (JsonElement el: docs) {
         JsonObject obj = el.getAsJsonObject();
         int index = obj.get("id").getAsInt();
         JsonArray entities = obj.getAsJsonArray("entities");
         List<Pair<String, String>> articleEntities = new ArrayList<>();
+        int j = 0;
         for (JsonElement el2: entities) {
+            if (j > 5) {
+              break;
+            }
             JsonObject obj2 = el2.getAsJsonObject();
             System.out.println(obj2.get("name").getAsString());
             System.out.println(obj2.get("type").getAsString());
             articleEntities.add(new Pair(obj2.get("name").getAsString(), obj2.get("type").getAsString()));
+            j++;
         }
         articles.get(index).addEntities(articleEntities);
       }
@@ -165,13 +169,13 @@ public class Controller {
         Pages pages = convertArticlesToPages(toBeInserted);
         String entities = analyser.getEntities(pages);
         String sentiment = analyser.getSentiment(pages);
-        processSentimentAndEntities(sentiment, entities, articles);
+        processSentimentAndEntities(sentiment, entities, toBeInserted);
     
         storage.insertArticles(toBeInserted, feed.getSecond());
       }
     }
     
-     /* List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
+      /*List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
       System.out.println(articles.size());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
@@ -185,12 +189,12 @@ public class Controller {
         System.out.println(entities);
         String sentiment = analyser.getSentiment(pages);
         System.out.println(sentiment);
-        processSentimentAndEntities(sentiment, entities, articles);
+        processSentimentAndEntities(sentiment, entities, toBeInserted);
         
         storage.insertArticles(toBeInserted, feeds.get(0).getSecond());
       
-      }
-      */
+      }*/
+      
   }
 
   public static void main(String[] args) throws Exception {
