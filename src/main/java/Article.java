@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class Article {
     private List<String> author;
     private Date publishedDate;
     private float sentiment;
-    private List<Pair<String, String>> entities;
+    private List<Pair<String, String>> entities = new ArrayList<>();
     private String url;
     private String description;
     private String imageUrl;
