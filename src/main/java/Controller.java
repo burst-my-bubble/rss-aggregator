@@ -90,7 +90,6 @@ public class Controller {
 
   public static void addImageUrls(List<Article> articles) {
     for (Article article : articles) {
-      System.out.println(getImage(article));
       article.addImage(getImage(article));
     }
   }
@@ -171,7 +170,7 @@ public class Controller {
       throws IOException
       {
     List<Pair<String, Object>> feeds = storage.getFeeds();
-    /*for (Pair<String, Object> feed: feeds) {
+    for (Pair<String, Object> feed: feeds) {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
@@ -186,8 +185,8 @@ public class Controller {
     
         storage.insertArticles(toBeInserted, feed.getSecond());
       }
-    }*/
-    
+    }
+   /* 
       List<Article> articles = reader.getArticles(feeds.get(7).getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
@@ -203,7 +202,7 @@ public class Controller {
         storage.insertArticles(toBeInserted, feeds.get(0).getSecond());
       
       }
-      
+*/      
   }
 
   public static void main(String[] args) throws Exception {
