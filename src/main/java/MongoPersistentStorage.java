@@ -21,12 +21,11 @@ public class MongoPersistentStorage implements PersistentStorage {
 
 
     public MongoPersistentStorage() {
-        String database = System.getenv("DATABASE_URI");
-        if (database == null) {
-            database = "localhost";
+        String databasePath = System.getenv("DATABASE_URI");
+        if (databasePath == null) {
+            databasePath = "localhost";
         }
-        database = "mongodb://" + database;
-        MongoClient client = MongoClients.create("mongodb://localhost");
+        MongoClient client = MongoClients.create("mongodb://"+databasePath);
         MongoDatabase database = client.getDatabase("burstMyBubble");
         this.articles = database.getCollection("articles");
         this.feeds = database.getCollection("feeds");
