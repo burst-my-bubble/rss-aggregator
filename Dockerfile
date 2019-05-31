@@ -5,3 +5,4 @@ RUN apt-get install -y maven
 
 COPY . .
 RUN mvn package
+ENV DATABASE_URI database
