@@ -9,7 +9,10 @@ import de.l3s.boilerpipe.extractors.ArticleExtractor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,20 +22,31 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
 /**
  * Controller oversees the process of aggregating and storing the articles.
  */
 public class Controller {
 
+  private static BufferedReader getHTMLBufferedReader(String urlAsString) throws IOException {
+    URL url = new URL(urlAsString);
+    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    if (con.getResponseCode() % 300 < 100) {
+      con.setInstanceFollowRedirects(false);
+      URL secondUrl = new URL(con.getHeaderField("Location"));
+      URLConnection con2 = secondUrl.openConnection();
+      return new BufferedReader(new InputStreamReader(con2.getInputStream()));
+    }
+    return new BufferedReader(new InputStreamReader(con.getInputStream()));
+  }
+
   /**
    * Extracts the html body for a document at that document's given URL.
+   * 
    * @param doc the news article that you want to get the HTML of.
    * @return the HTML of the document.
    */
   public static String getHTML(String urlAsString) throws IOException {
-    URL url = new URL(urlAsString);
-    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    BufferedReader in = getHTMLBufferedReader(urlAsString);
     String inputLine;
     StringBuilder htmlText = new StringBuilder();
     while ((inputLine = in.readLine()) != null)
@@ -76,6 +90,7 @@ public class Controller {
 
   public static void addImageUrls(List<Article> articles) {
     for (Article article : articles) {
+      System.out.println(getImage(article));
       article.addImage(getImage(article));
     }
   }
@@ -135,8 +150,6 @@ public class Controller {
               break;
             }
             JsonObject obj2 = el2.getAsJsonObject();
-            System.out.println(obj2.get("name").getAsString());
-            System.out.println(obj2.get("type").getAsString());
             articleEntities.add(new Pair(obj2.get("name").getAsString(), obj2.get("type").getAsString()));
             j++;
         }
@@ -175,8 +188,7 @@ public class Controller {
       }
     }*/
     
-      List<Article> articles = reader.getArticles(feeds.get(0).getFirst());
-      System.out.println(articles.size());
+      List<Article> articles = reader.getArticles(feeds.get(7).getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
           .limit(1)
