@@ -16,6 +16,7 @@ public class Article {
     private String description;
     private String imageUrl;
     private Pair<String, Object> feed;
+    private String plainText;
     
     public Article(String title, String description, String url, List<String> author, Date publishedDate) {
         this.title = title;
@@ -50,6 +51,14 @@ public class Article {
 
     public void setFeed(Pair<String, Object> feed){
         this.feed = feed;
+    }
+
+    public void setPlainText(String plainText){
+        this.plainText = plainText;
+    }
+
+    public String getPlainText(){
+        return plainText;
     }
 
     public Pair<String, Object> getFeed(){

@@ -54,7 +54,7 @@ class ControllerTest {
       oneOf(analyser).getEntities(with(any(Pages.class))); will(returnValue("{\"documents\":[{\"id\":\"0\",\"entities\":[{\"name\":\"Example.com\",\"matches\":[{\"wikipediaScore\":0.70300735599858144,\"entityTypeScore\":0.8,\"text\":\"Example Domain\",\"offset\":0,\"length\":14}],\"wikipediaLanguage\":\"en\",\"wikipediaId\":\"Example.com\",\"wikipediaUrl\":\"https://en.wikipedia.org/wiki/Example.com\",\"bingId\":\"02ad04e0-2440-f399-1c14-fb2b8f77645c\",\"type\":\"Other\"}]}],\"errors\":[]}"));
       oneOf(analyser).getSentiment(with(any(Pages.class))); will(returnValue("{\"documents\":[{\"id\":\"0\",\"score\":0.88038372993469238}],\"errors\":[]}"));
       oneOf(analyser).getSentiment(with(any(Pages.class))); will(returnValue("{\"documents\":[{\"id\":\"0\",\"score\":0.88038372993469238}],\"errors\":[]}"));
-      oneOf(storage).insertArticles(articles, null);
+      oneOf(storage).insertArticles(articles);
     }});
     Controller.aggregateArticles(storage, reader, analyser);
   }
@@ -71,7 +71,7 @@ class ControllerTest {
       oneOf(storage).urlExists("https://example.com"); will(returnValue(true));
       oneOf(analyser).getEntities(with(any(Pages.class))); will(returnValue("entities"));
       oneOf(analyser).getSentiment(with(any(Pages.class))); will(returnValue("sentiment"));
-      oneOf(storage).insertArticles(List.of(), null);
+      oneOf(storage).insertArticles(List.of());
     }});
     Controller.aggregateArticles(storage, reader, analyser);
   }
