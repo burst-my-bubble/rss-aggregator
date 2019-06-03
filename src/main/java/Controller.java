@@ -26,6 +26,9 @@ import com.google.gson.JsonParser;
  */
 public class Controller {
 
+  final static String[] BadKeywords = {"Getty"};
+  final static int MAX_NAME_LENGTH = 20;
+
   private static BufferedReader getHTMLBufferedReader(String urlAsString) throws IOException {
     URL url = new URL(urlAsString);
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -111,6 +114,55 @@ public class Controller {
     return pages;
   }
 
+  private static boolean isUselessCategory(String c) {
+    return c.equals("DateTime") || c.equals("Other") || c.equals("Quantity") || c.equals("URL") || c.equals("Email");
+  }
+
+  private static boolean containsBadKeyword(String name) {
+    for (String keyword : BadKeywords) {
+      if (name.contains(keyword)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static String removeBrackets(String word) {
+    for (int i = 0; i < word.length(); i++) {
+      if (word.charAt(i) == '(') {
+        return word.substring(0, i);
+      }
+    }
+    return word;
+  }
+
+  private static String getAcronym(String name) {
+    name = removeBrackets(name);
+    String acronym = "";
+    for (int i = 0; i < name.length(); i++) {
+      if (Character.isUpperCase(name.charAt(i))) {
+        acronym += name.charAt(i);
+      }
+    }
+    return acronym;
+  }
+
+
+  private static Entity shortenOrgName(Entity e) {
+    e = new Entity(removeBrackets(e.getActualName()), e.getCategory());
+    if (e.isOrganization() && e.getActualName().length() > MAX_NAME_LENGTH) {
+      e.setDisplayName(getAcronym(e.getActualName()));
+    }
+    return e;
+  }
+
+  private static void cleanEntities(List<Entity> entities) {
+    entities.removeIf(e -> isUselessCategory(e.getCategory()));
+    entities.removeIf(e -> containsBadKeyword(e.getActualName()));
+    entities = entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
+
+    System.out.println(entities);
+  }
 
   /**
    * Adds the respective sentiment values and entities to each article.
@@ -141,16 +193,12 @@ public class Controller {
         JsonObject obj = el.getAsJsonObject();
         int index = obj.get("id").getAsInt();
         JsonArray entities = obj.getAsJsonArray("entities");
-        List<Pair<String, String>> articleEntities = new ArrayList<>();
-        int j = 0;
+        List<Entity> articleEntities = new ArrayList<>();
         for (JsonElement el2: entities) {
-            if (j > 5) {
-              break;
-            }
             JsonObject obj2 = el2.getAsJsonObject();
-            articleEntities.add(new Pair(obj2.get("name").getAsString(), obj2.get("type").getAsString()));
-            j++;
+            articleEntities.add(new Entity(obj2.get("name").getAsString(), obj2.get("type").getAsString()));
         }
+        cleanEntities(articleEntities);
         articles.get(index).addEntities(articleEntities);
       }
     }
@@ -173,6 +221,7 @@ public class Controller {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
+          .limit(2)
           .collect(Collectors.toList());
 
       if(!toBeInserted.isEmpty()) {

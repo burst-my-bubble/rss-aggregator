@@ -66,8 +66,9 @@ public class MongoPersistentStorage implements PersistentStorage {
         articles.insertMany(articlesToBeInserted.stream().map(e -> {
             List<Document> docs = e.getEntities().stream().map(entity -> 
                     new Document()
-                        .append("name", entity.getFirst())
-                        .append("category", entity.getSecond())
+                        .append("name", entity.getActualName())
+                        .append("displayName", entity.getDisplayName())
+                        .append("category", entity.getCategory())
                 ).collect(Collectors.toList());
             return new Document()
                 .append("title", e.getTitle())

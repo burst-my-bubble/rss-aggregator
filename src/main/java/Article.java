@@ -11,7 +11,7 @@ public class Article {
     private List<String> author;
     private Date publishedDate;
     private float sentiment;
-    private List<Pair<String, String>> entities = new ArrayList<>();
+    private List<Entity> entities = new ArrayList<>();
     private String url;
     private String description;
     private String imageUrl;
@@ -39,7 +39,7 @@ public class Article {
      * information about them.
      * @param entities is in the format of a JSON document.
      */
-    public void addEntities(List<Pair<String, String>> entities) {
+    public void addEntities(List<Entity> entities) {
         this.entities = entities;
     }
 
@@ -75,7 +75,7 @@ public class Article {
         return sentiment;
     }
 
-    public List<Pair<String, String>> getEntities() {
+    public List<Entity> getEntities() {
         return entities;
     }
 }
