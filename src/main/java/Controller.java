@@ -160,8 +160,6 @@ public class Controller {
     entities.removeIf(e -> isUselessCategory(e.getCategory()));
     entities.removeIf(e -> containsBadKeyword(e.getActualName()));
     entities = entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
-
-    System.out.println(entities);
   }
 
   /**
@@ -221,7 +219,6 @@ public class Controller {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> toBeInserted = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
-          .limit(2)
           .collect(Collectors.toList());
 
       if(!toBeInserted.isEmpty()) {
