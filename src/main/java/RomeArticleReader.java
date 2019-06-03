@@ -28,7 +28,7 @@ public class RomeArticleReader implements ArticleReader {
 
             return feed.getEntries().stream()
                 .map(e -> {
-                    System.out.println(e.getDescription());
+                    //System.out.println(e.getDescription());
                     SyndContent content = e.getDescription();
                     List<String> authors = e.getAuthors().stream().map(f -> f.getName()).collect(Collectors.toList());
                     return new Article(e.getTitle(), content == null ? null : content.getValue()
