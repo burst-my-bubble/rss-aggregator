@@ -26,7 +26,6 @@ import com.google.gson.JsonParser;
  */
 public class Controller {
 
-  final static String[] BadKeywords = {"Getty"};
   final static int MAX_NAME_LENGTH = 20;
 
   private static BufferedReader getHTMLBufferedReader(String urlAsString) throws IOException {
@@ -118,14 +117,6 @@ public class Controller {
     return c.equals("DateTime") || c.equals("Other") || c.equals("Quantity") || c.equals("URL") || c.equals("Email");
   }
 
-  private static boolean containsBadKeyword(String name) {
-    for (String keyword : BadKeywords) {
-      if (name.contains(keyword)) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   private static String removeBrackets(String word) {
     for (int i = 0; i < word.length(); i++) {
@@ -158,7 +149,6 @@ public class Controller {
 
   private static List<Entity> cleanEntities(List<Entity> entities) {
     entities.removeIf(e -> isUselessCategory(e.getCategory()));
-    entities.removeIf(e -> containsBadKeyword(e.getActualName()));
     return entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
   }
 
