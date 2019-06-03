@@ -164,12 +164,10 @@ public class Controller {
     return e;
   }
 
-  private static void cleanEntities(List<Entity> entities) {
+  private static List<Entity> cleanEntities(List<Entity> entities) {
     entities.removeIf(e -> isUselessCategory(e.getCategory()));
     entities.removeIf(e -> containsBadKeyword(e.getActualName()));
-    entities = entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
-
-    System.out.println(entities);
+    return entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
   }
 
   /**
@@ -206,7 +204,8 @@ public class Controller {
             JsonObject obj2 = el2.getAsJsonObject();
             articleEntities.add(new Entity(obj2.get("name").getAsString(), obj2.get("type").getAsString()));
         }
-        cleanEntities(articleEntities);
+        articleEntities = cleanEntities(articleEntities);
+        System.out.println(articleEntities);
         articles.get(index).addEntities(articleEntities);
       }
     }
