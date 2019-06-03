@@ -22,7 +22,6 @@ public interface PersistentStorage {
      * Inserts a list of articles into the storage, noting which feed they came
      * from.
      * @param articles is the list of articles to be inserted.
-     * @param feedId is the id of the news source/feed.
      */
-    public void insertArticles(List<Article> articles, Object feedId);
+    public void insertArticles(List<Article> articles);
 }

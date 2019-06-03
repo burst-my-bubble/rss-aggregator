@@ -217,22 +217,27 @@ public class Controller {
       throws IOException
       {
     List<Pair<String, Object>> feeds = storage.getFeeds();
+    List<Article> toBeInserted = new ArrayList();
     for (Pair<String, Object> feed: feeds) {
       List<Article> articles = reader.getArticles(feed.getFirst());
-      List<Article> toBeInserted = articles.stream()
+      List<Article> newArticles = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
-          .limit(2)
+          //.limit(2)
           .collect(Collectors.toList());
 
-      if(!toBeInserted.isEmpty()) {
-        addImageUrls(toBeInserted);
-        Pages pages = convertArticlesToPages(toBeInserted);
-        String entities = analyser.getEntities(pages);
-        String sentiment = analyser.getSentiment(pages);
-        processSentimentAndEntities(sentiment, entities, toBeInserted);
-    
-        storage.insertArticles(toBeInserted, feed.getSecond());
-      }
+      newArticles.forEach(a -> a.setFeed(feed));
+      toBeInserted.addAll(newArticles);
+
+    }
+
+    if(!toBeInserted.isEmpty()) {
+      addImageUrls(toBeInserted);
+      Pages pages = convertArticlesToPages(toBeInserted);
+      String entities = analyser.getEntities(pages);
+      String sentiment = analyser.getSentiment(pages);
+      processSentimentAndEntities(sentiment, entities, toBeInserted);
+  
+      storage.insertArticles(toBeInserted);
     }
    /* 
       List<Article> articles = reader.getArticles(feeds.get(7).getFirst());
