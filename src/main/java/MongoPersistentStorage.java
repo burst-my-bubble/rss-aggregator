@@ -18,6 +18,7 @@ public class MongoPersistentStorage implements PersistentStorage {
 
     private final MongoCollection<Document> articles;
     private final MongoCollection<Document> feeds;
+    private final MongoCollection<Document> entities;
 
 
     public MongoPersistentStorage() {
@@ -29,6 +30,7 @@ public class MongoPersistentStorage implements PersistentStorage {
         MongoDatabase database = client.getDatabase("burstMyBubble");
         this.articles = database.getCollection("articles");
         this.feeds = database.getCollection("feeds");
+        this.entities = database.getCollection("entities");
     }
 
     /**
@@ -56,6 +58,23 @@ public class MongoPersistentStorage implements PersistentStorage {
     }
 
     /**
+     * Inserts a list of entities into the entities table, updating their score.
+     * @param docs is a list of Mongo documents representing the entities.
+     */
+    private void insertEntities(List<Document> docs) {
+        for (Document entity : docs) {
+            if (entities.find(entity).first() == null) {
+               Document newEntity = entity;
+               newEntity.append("score", 0);
+               entities.insertOne(newEntity); 
+            } else {
+                entities.findOneAndUpdate(new Document("name", entity.get("name")).append("category", entity.get("category")),
+                    new Document("$inc", new Document("score", 1)));
+            }
+        }
+    }
+
+    /**
      * {@inheritDoc}
      * @param articlesToBeInserted is the list of articles to be inserted into
      * the Mongo storage.
@@ -63,13 +82,15 @@ public class MongoPersistentStorage implements PersistentStorage {
      */
     @Override
     public void insertArticles(List<Article> articlesToBeInserted, Object feedId) {
+        System.out.println("gonna do some inserts");
         articles.insertMany(articlesToBeInserted.stream().map(e -> {
-            List<Document> docs = e.getEntities().stream().map(entity -> 
-                    new Document()
+            List<Document> docs = e.getEntities().stream().map(entity -> {
+                    return new Document()
                         .append("name", entity.getActualName())
                         .append("displayName", entity.getDisplayName())
-                        .append("category", entity.getCategory())
-                ).collect(Collectors.toList());
+                        .append("category", entity.getCategory());
+            }).collect(Collectors.toList());
+            insertEntities(docs);
             return new Document()
                 .append("title", e.getTitle())
                 .append("author", e.getAuthor())
