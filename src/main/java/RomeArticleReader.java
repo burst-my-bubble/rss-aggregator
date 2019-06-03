@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -27,8 +28,10 @@ public class RomeArticleReader implements ArticleReader {
 
             return feed.getEntries().stream()
                 .map(e -> {
+                    System.out.println(e.getDescription());
+                    SyndContent content = e.getDescription();
                     List<String> authors = e.getAuthors().stream().map(f -> f.getName()).collect(Collectors.toList());
-                    return new Article(e.getTitle(), e.getDescription().getValue()
+                    return new Article(e.getTitle(), content == null ? null : content.getValue()
                         , e.getUri(), authors, e.getPublishedDate());
                 }).collect(Collectors.toList());
         } catch (Exception ex) {
