@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,22 +77,30 @@ public class Controller {
    * @param article is the article that you want the image of.
    * @return the url to the image.
    */
-  public static String getImage(Article article) {
+  public static boolean getImage(Article article) {
     String html = "";
     try {
       html = getHTML(article.getUrl());
-    } catch (IOException e) {
-      e.printStackTrace();
+      article.setPlainText(getPlainText(html));
+      Document doc = Jsoup.parse(html);
+      Elements els = doc.select("head").select("meta[property=\"og:image\"]");
+      Element el = els.first();
+      article.addImage(el == null ? null : el.attr("content"));
+      return true;
+    } catch (Exception e) {
+      System.out.println("Error on image for " + article.getFeed().getFirst());
+      return false;
     }
-    Document doc = Jsoup.parse(html);
-    Elements els = doc.select("head").select("meta[property=\"og:image\"]");
-    Element el = els.first();
-    return el == null ? null : el.attr("content");
   }
 
   public static void addImageUrls(List<Article> articles) {
-    for (Article article : articles) {
-      article.addImage(getImage(article));
+
+    Iterator<Article> it = articles.iterator();
+
+    while(it.hasNext()){
+      if(!getImage(it.next())){
+        it.remove();
+      }
     }
   }
 
@@ -105,8 +114,7 @@ public class Controller {
     Pages pages = new Pages();
     for (int i = 0; i < articles.size(); i++) {
       Article article = articles.get(i);
-      String html = getHTML(article.getUrl());
-      String plainText = getPlainText(html);
+      String plainText = article.getPlainText();
       String mainText = plainText.substring(0, Math.min(plainText.length(), 5119));
       pages.add(Integer.toString(i), "en", mainText);
     }
@@ -206,21 +214,28 @@ public class Controller {
       throws IOException
       {
     List<Pair<String, Object>> feeds = storage.getFeeds();
+    List<Article> toBeInserted = new ArrayList();
     for (Pair<String, Object> feed: feeds) {
       List<Article> articles = reader.getArticles(feed.getFirst());
-      List<Article> toBeInserted = articles.stream()
+      List<Article> newArticles = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
+          .limit(10)
           .collect(Collectors.toList());
 
-      if(!toBeInserted.isEmpty()) {
-        addImageUrls(toBeInserted);
-        Pages pages = convertArticlesToPages(toBeInserted);
-        String entities = analyser.getEntities(pages);
-        String sentiment = analyser.getSentiment(pages);
-        processSentimentAndEntities(sentiment, entities, toBeInserted);
-    
-        storage.insertArticles(toBeInserted, feed.getSecond());
-      }
+      newArticles.forEach(a -> a.setFeed(feed));
+      addImageUrls(newArticles);
+      toBeInserted.addAll(newArticles);
+      System.out.println("Reading from feed " + feed.getFirst() + ". There are " + newArticles.size() + " articles.");
+    }
+
+    if(!toBeInserted.isEmpty()) {
+      //addImageUrls(toBeInserted);
+      Pages pages = convertArticlesToPages(toBeInserted);
+      String entities = analyser.getEntities(pages);
+      String sentiment = analyser.getSentiment(pages);
+      processSentimentAndEntities(sentiment, entities, toBeInserted);
+  
+      storage.insertArticles(toBeInserted);
     }
    /* 
       List<Article> articles = reader.getArticles(feeds.get(7).getFirst());

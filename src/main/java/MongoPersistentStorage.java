@@ -81,7 +81,7 @@ public class MongoPersistentStorage implements PersistentStorage {
      * @param feedId is the id of the news source.
      */
     @Override
-    public void insertArticles(List<Article> articlesToBeInserted, Object feedId) {
+    public void insertArticles(List<Article> articlesToBeInserted) {
         articles.insertMany(articlesToBeInserted.stream().map(e -> {
             List<Document> docs = e.getEntities().stream().map(entity -> {
                     return new Document()
@@ -96,7 +96,7 @@ public class MongoPersistentStorage implements PersistentStorage {
                 .append("published_date", e.getPublishedDate())
                 .append("url", e.getUrl())
                 .append("description", e.getDescription())
-                .append("feed_id", feedId)
+                .append("feed_id", e.getFeed().getSecond())
                 .append("image_url", e.getImage())
                 .append("entities", docs)
                 .append("sentiment", e.getSentiment());
