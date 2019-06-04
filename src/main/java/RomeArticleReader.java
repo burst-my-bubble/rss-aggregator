@@ -37,8 +37,13 @@ public class RomeArticleReader implements ArticleReader {
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("ERROR: " + ex.getMessage() + "Url:" + url);
-            throw new RuntimeException(ex);
+            return new ArrayList<>();
         }
+    }
+
+    public static void main(String[] args) {
+        RomeArticleReader reader = new RomeArticleReader();
+        reader.getArticles("https://www.thesun.co.uk/tech/feed/");
     }
 
 }
