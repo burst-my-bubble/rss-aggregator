@@ -37,6 +37,10 @@ public class Entity {
         return category.equals("Organization");
     }
 
+    public boolean isOther() {
+        return category.equals("Other");
+    }
+
     @Override
     public String toString() {
         return "(" + actualName + ", " + displayName + ", " + category + ")";

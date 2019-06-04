@@ -127,7 +127,7 @@ public class Controller {
    * @return true if the given category is useless.
    */
   private static boolean isUselessCategory(String c) {
-    return c.equals("DateTime") || c.equals("Other") || c.equals("Quantity") || c.equals("URL") || c.equals("Email");
+    return c.equals("DateTime") || c.equals("Quantity") || c.equals("URL") || c.equals("Email");
   }
 
   /**
@@ -174,6 +174,10 @@ public class Controller {
     return e;
   }
 
+  private static boolean isSuitableOtherEntity(Entity e) {
+    return (e.isOther() && e.getActualName().length() < 5);
+  }
+
   /**
    * Runs various functions on the list of entities to remove unnecessary ones 
    * and to tidy the names.
@@ -182,6 +186,7 @@ public class Controller {
    */
   private static List<Entity> cleanEntities(List<Entity> entities) {
     entities.removeIf(e -> isUselessCategory(e.getCategory()));
+    entities.removeIf(e -> isSuitableOtherEntity(e));
     return entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
   }
 
