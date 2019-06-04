@@ -121,11 +121,20 @@ public class Controller {
     return pages;
   }
 
+  /**
+   * Used to remove entities if their categories are useless.
+   * @param c is the category of the entity that is being checked.
+   * @return true if the given category is useless.
+   */
   private static boolean isUselessCategory(String c) {
     return c.equals("DateTime") || c.equals("Other") || c.equals("Quantity") || c.equals("URL") || c.equals("Email");
   }
 
-
+  /**
+   * Removes brackets and anything inside the brackets from a word.
+   * @param word is the string to be processed.
+   * @return the modified string.
+   */
   private static String removeBrackets(String word) {
     for (int i = 0; i < word.length(); i++) {
       if (word.charAt(i) == '(') {
@@ -135,6 +144,11 @@ public class Controller {
     return word;
   }
 
+  /**
+   * Gets an acronym from a string, comprising of its upper case letters.
+   * @param name the string that's acronym is to be calculateed.
+   * @return the acronym.
+   */
   private static String getAcronym(String name) {
     name = removeBrackets(name);
     String acronym = "";
@@ -146,6 +160,12 @@ public class Controller {
     return acronym;
   }
 
+  /**
+   * Removes brackets from the entity name and turns it into an acronym if it's
+   * an organization and the name is too long.
+   * @param e is the entity to be shortened.
+   * @return the modified entity.
+   */
   private static Entity shortenOrgName(Entity e) {
     e = new Entity(removeBrackets(e.getActualName()), e.getCategory());
     if (e.isOrganization() && e.getActualName().length() > MAX_NAME_LENGTH) {
@@ -154,6 +174,12 @@ public class Controller {
     return e;
   }
 
+  /**
+   * Runs various functions on the list of entities to remove unnecessary ones 
+   * and to tidy the names.
+   * @param entities is the list of unmodified entities.
+   * @return the list of modified entities.
+   */
   private static List<Entity> cleanEntities(List<Entity> entities) {
     entities.removeIf(e -> isUselessCategory(e.getCategory()));
     return entities.stream().map(e -> shortenOrgName(e)).collect(Collectors.toList());
