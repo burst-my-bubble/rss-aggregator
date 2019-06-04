@@ -58,12 +58,12 @@ public class MongoPersistentStorage implements PersistentStorage {
     }
 
     /**
-     * Inserts a list of entities into the entities table, updating their score.
+     * Inserts a list of entities into the entities table, incrementing their score.
      * @param docs is a list of Mongo documents representing the entities.
      */
     private void insertEntities(List<Document> docs) {
         for (Document entity : docs) {
-            if (entities.find(entity).first() == null) {
+            if (entities.find(new Document("name", entity.get("name"))).first() == null) {
                Document newEntity = entity;
                newEntity.append("score", 0);
                entities.insertOne(newEntity); 
