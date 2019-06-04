@@ -233,9 +233,9 @@ public class Controller {
       List<Pages> pageList = new ArrayList<>();
       int i = 0;
       while(i < toBeInserted.size()){
-        int end = Math.min(i + 180, toBeInserted.size());
+        int end = Math.min(i + 100, toBeInserted.size());
         pageList.add(convertArticlesToPages(toBeInserted.subList(i, end), i));
-        i = i + 180;
+        i = i + 100;
       }
 
       //Pages pages = convertArticlesToPages(toBeInserted);
