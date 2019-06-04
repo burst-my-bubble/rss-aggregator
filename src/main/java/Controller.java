@@ -146,7 +146,6 @@ public class Controller {
     return acronym;
   }
 
-
   private static Entity shortenOrgName(Entity e) {
     e = new Entity(removeBrackets(e.getActualName()), e.getCategory());
     if (e.isOrganization() && e.getActualName().length() > MAX_NAME_LENGTH) {
