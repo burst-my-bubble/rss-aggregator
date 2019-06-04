@@ -110,13 +110,13 @@ public class Controller {
    * @return a list of pages where each page contains the plaintext corresponding
    * to one of the articles.
    */
-  static Pages convertArticlesToPages(List<Article> articles) throws IOException {
+  static Pages convertArticlesToPages(List<Article> articles, int startVal) throws IOException {
     Pages pages = new Pages();
     for (int i = 0; i < articles.size(); i++) {
       Article article = articles.get(i);
       String plainText = article.getPlainText();
       String mainText = plainText.substring(0, Math.min(plainText.length(), 5119));
-      pages.add(Integer.toString(i), "en", mainText);
+      pages.add(Integer.toString(i + startVal), "en", mainText);
     }
     return pages;
   }
@@ -230,10 +230,23 @@ public class Controller {
 
     if(!toBeInserted.isEmpty()) {
       //addImageUrls(toBeInserted);
-      Pages pages = convertArticlesToPages(toBeInserted);
-      String entities = analyser.getEntities(pages);
-      String sentiment = analyser.getSentiment(pages);
-      processSentimentAndEntities(sentiment, entities, toBeInserted);
+      List<Pages> pageList = new ArrayList<>();
+      int i = 0;
+      while(i < toBeInserted.size()){
+        int end = Math.min(i + 180, toBeInserted.size());
+        pageList.add(convertArticlesToPages(toBeInserted.subList(i, end), i));
+        i = i + 180;
+      }
+
+      //Pages pages = convertArticlesToPages(toBeInserted);
+
+
+      for(Pages p : pageList) {
+        String entities = analyser.getEntities(p);
+        String sentiment = analyser.getSentiment(p);
+        processSentimentAndEntities(sentiment, entities, toBeInserted);
+      }
+
   
       storage.insertArticles(toBeInserted);
     }
@@ -259,7 +272,7 @@ public class Controller {
   public static void main(String[] args) throws Exception {
     PersistentStorage storage = new MongoPersistentStorage();
     ArticleReader reader = new RomeArticleReader();
-    TextAnalyser analyser = new AzureConnection(AzureConnection.getKey());
+    TextAnalyser analyser = new AzureConnection("99a745e70285402385155c3aec4fba97");
     aggregateArticles(storage, reader, analyser);
   }
 }
