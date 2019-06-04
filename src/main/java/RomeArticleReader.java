@@ -41,9 +41,4 @@ public class RomeArticleReader implements ArticleReader {
         }
     }
 
-    public static void main(String[] args) {
-        RomeArticleReader reader = new RomeArticleReader();
-        reader.getArticles("https://www.thesun.co.uk/tech/feed/");
-    }
-
 }
