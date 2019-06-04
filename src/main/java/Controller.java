@@ -219,7 +219,7 @@ public class Controller {
       List<Article> articles = reader.getArticles(feed.getFirst());
       List<Article> newArticles = articles.stream()
           .filter(a -> !storage.urlExists(a.getUrl()))
-          .limit(5)
+          .limit(10)
           .collect(Collectors.toList());
 
       newArticles.forEach(a -> a.setFeed(feed));
