@@ -270,14 +270,16 @@ public class Controller {
 
       //Pages pages = convertArticlesToPages(toBeInserted);
 
-
+      int j = 1;
       for(Pages p : pageList) {
         String entities = analyser.getEntities(p);
         String sentiment = analyser.getSentiment(p);
         processSentimentAndEntities(sentiment, entities, toBeInserted);
+        System.out.println("Processed page " + j + " of " + pageList.size());
+        j++;
       }
 
-  
+      System.out.println("Putting articles into database");
       storage.insertArticles(toBeInserted);
     }
    /* 
