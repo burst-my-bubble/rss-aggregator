@@ -60,18 +60,24 @@ public class Controller {
 
   /**
    * Extracts the plain text from a document.
-   * @param doc the document that you want to extract the plain text from.
+   * @param url the url that you want to extract the plain text from.
    * @return the plain text of the document.
    */
-  public static String getPlainText(String text) throws IOException {
+  public static String getPlainText(String url) throws IOException {
     String result = "";
     try {
-      result = ArticleExtractor.INSTANCE.getText(text);
+      result = ArticleExtractor.INSTANCE.getText(new URL(url));
     } catch (BoilerpipeProcessingException e) {
       e.printStackTrace();
     }
     return result;
   }
+
+  public static void setPlainText(List<Article> articles) throws IOException {
+    for (Article article : articles) {
+      article.setPlainText(getPlainText(article.getUrl()));
+    }
+  } 
 
   /**
    * Gets the main image of a news article from its html.
@@ -82,7 +88,6 @@ public class Controller {
     String html = "";
     try {
       html = getHTML(article.getUrl());
-      article.setPlainText(getPlainText(html));
       Document doc = Jsoup.parse(html);
       Elements els = doc.select("head").select("meta[property=\"og:image\"]");
       Element el = els.first();
@@ -117,7 +122,7 @@ public class Controller {
     for (int i = 0; i < articles.size(); i++) {
       Article article = articles.get(i);
       String plainText = article.getPlainText();
-      String mainText = plainText.substring(0, Math.min(plainText.length(), 5119));
+      String mainText = plainText.substring(0, Math.min(plainText.length(), 2500));
       pages.add(Integer.toString(i + startVal), "en", mainText);
     }
     return pages;
@@ -255,6 +260,7 @@ public class Controller {
           .collect(Collectors.toList());
 
       newArticles.forEach(a -> a.setFeed(feed));
+      setPlainText(newArticles);
       addImageUrls(newArticles);
       toBeInserted.addAll(newArticles);
       System.out.println("Reading from feed " + feed.getFirst() + ". There are " + newArticles.size() + " articles.");
