@@ -32,6 +32,7 @@ public class Controller {
   private static BufferedReader getHTMLBufferedReader(String urlAsString) throws IOException {
     URL url = new URL(urlAsString);
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    con.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0");
     if (con.getResponseCode() % 300 < 100) {
       con.setInstanceFollowRedirects(false);
       URL secondUrl = new URL(con.getHeaderField("Location"));
@@ -88,6 +89,7 @@ public class Controller {
       article.addImage(el == null ? null : el.attr("content"));
       return true;
     } catch (Exception e) {
+      e.printStackTrace();
       System.out.println("Error on image for " + article.getFeed().getFirst());
       return false;
     }
@@ -270,14 +272,16 @@ public class Controller {
 
       //Pages pages = convertArticlesToPages(toBeInserted);
 
-
+      int j = 1;
       for(Pages p : pageList) {
         String entities = analyser.getEntities(p);
         String sentiment = analyser.getSentiment(p);
         processSentimentAndEntities(sentiment, entities, toBeInserted);
+        System.out.println("Processed page " + j + " of " + pageList.size());
+        j++;
       }
 
-  
+      System.out.println("Putting articles into database");
       storage.insertArticles(toBeInserted);
     }
    /* 
@@ -300,6 +304,7 @@ public class Controller {
   }
 
   public static void main(String[] args) throws Exception {
+    System.setProperty("http.agent", "");
     PersistentStorage storage = new MongoPersistentStorage();
     ArticleReader reader = new RomeArticleReader();
     TextAnalyser analyser = new AzureConnection("99a745e70285402385155c3aec4fba97");
