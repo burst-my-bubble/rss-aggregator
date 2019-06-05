@@ -66,6 +66,7 @@ public class MongoPersistentStorage implements PersistentStorage {
             if (entities.find(new Document("name", entity.get("name"))).first() == null) {
                Document newEntity = entity;
                newEntity.append("score", 0);
+               newEntity.append("bl", "false");
                entities.insertOne(newEntity); 
             } else {
                 entities.findOneAndUpdate(new Document("name", entity.get("name")).append("category", entity.get("category")),
