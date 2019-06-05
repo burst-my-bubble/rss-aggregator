@@ -32,7 +32,7 @@ public class RomeArticleReader implements ArticleReader {
                     SyndContent content = e.getDescription();
                     List<String> authors = e.getAuthors().stream().map(f -> f.getName()).collect(Collectors.toList());
                     return new Article(e.getTitle(), content == null ? null : content.getValue()
-                        , e.getUri(), authors, e.getPublishedDate());
+                        , e.getLink(), authors, e.getPublishedDate());
                 }).collect(Collectors.toList());
         } catch (Exception ex) {
             ex.printStackTrace();
